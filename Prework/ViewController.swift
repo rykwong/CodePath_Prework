@@ -21,16 +21,18 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.title = "Tip Calculator"
         setMode()
+        setDefaults()
     }
     
-    @IBAction func calculateTip(_ sender: Any) {
+    @IBAction func calculateTip(_ sender: Any?) {
         let bill = Double(billAmountTextField.text!) ?? 0
         let formatter = NumberFormatter()
-        formatter.locale = Locale(identifier: "en_US")
+        formatter.usesGroupingSeparator = true
+        formatter.locale = Locale.current
         formatter.numberStyle = .currency
-        let tipPercent = tipSlider.value * 100
-        let tip = formatter.string(from: bill * Double(tipSlider.value) as NSNumber)
-        let total = formatter.string(from: bill + (bill * Double(tipSlider.value)) as NSNumber)
+        let tipPercent = round(tipSlider.value * 100)
+        let tip = formatter.string(from: bill * Double(tipPercent/100) as NSNumber)
+        let total = formatter.string(from: bill + (bill * Double(tipPercent/100)) as NSNumber)
         
         tipAmount.text = String(format: "%.0f%%",tipPercent)
         tipAmountLabel.text = tip
@@ -40,6 +42,7 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setMode()
+        calculateTip(nil)
         print("view will appear")
         // This is a good place to retrieve the default tip percentage from UserDefaults
         // and use it to update the tip amount
@@ -51,6 +54,16 @@ class ViewController: UIViewController {
         billAmountTextField.becomeFirstResponder()
     }
     
+    func setDefaults(){
+        let formatter = NumberFormatter()
+        formatter.usesGroupingSeparator = true
+        formatter.locale = Locale.current
+        formatter.numberStyle = .currency
+        billAmountTextField.placeholder = formatter.string(from: 0 as NSNumber)
+        tipAmountLabel.text = formatter.string(from: 0 as NSNumber)
+        totalLabel.text = formatter.string(from: 0 as NSNumber)
+        
+    }
     func setMode(){
         let mode = UserDefaults.standard.string(forKey: "Mode") ?? "Dark"
         if mode == "Light" {

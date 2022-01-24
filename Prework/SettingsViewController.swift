@@ -76,6 +76,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         let defaults = UserDefaults.standard
         defaults.set(Double(tipField.text!.replacingOccurrences(of: "%", with: "")),forKey: "Tip")
         defaults.synchronize()
